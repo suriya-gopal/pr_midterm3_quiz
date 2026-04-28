@@ -136,6 +136,107 @@ nx.is_connected(G)       # Is the graph connected?
 
 ---
 
+## 💡 Important Behaviours to Remember
+
+### add_edge() auto-creates nodes
+No need to add nodes separately — edges create them automatically!
+```python
+G = nx.Graph()
+G.add_edge('A', 'B')     # A and B didn't exist before — auto created!
+print(list(G.nodes))     # ['A', 'B']
+```
+
+| Approach | Code |
+|---|---|
+| Explicit — nodes first, then edges | `G.add_node('A')` then `G.add_edge('A', 'B')` |
+| Implicit — edges auto-create nodes | `G.add_edge('A', 'B')` directly |
+
+> 📱 **Analogy:** Like a WhatsApp group — the moment you add a conversation between two people, both contacts get automatically added to your phonebook!
+
+---
+
+### ⚠️ Duplicate nodes/edges are silently ignored!
+```python
+G = nx.Graph()
+G.add_edges_from([(1, 2), (1, 3)])  # Creates nodes 1,2,3 AND edges
+G.add_node(1)        # Already exists — ignored!
+G.add_edge(1, 2)     # Already exists — ignored!
+print(G.number_of_nodes())  # 3 (not 4)
+print(G.number_of_edges())  # 2 (not 3)
+```
+> ⚠️ **No error is raised** — NetworkX just quietly skips duplicates. Watch out for MCQs on this!
+
+---
+
+### nx.Graph() vs nx.DiGraph()
+
+| | `nx.Graph()` | `nx.DiGraph()` |
+|---|---|---|
+| Type | Undirected | Directed |
+| Edge A→B means B→A? | ✅ Yes (two-way) | ❌ No (one-way) |
+| Use case | Friendships | Instagram follows |
+| Connected check | `nx.is_connected(G)` | `nx.is_weakly_connected(G)` |
+
+---
+
+### ⚠️ None cannot be a node!
+```python
+G.add_node(None)   # ❌ NOT allowed — raises an error!
+G.add_node(0)      # ✅ Fine — 0 is not None
+G.add_node('')     # ✅ Fine — empty string is not None
+```
+> `None` is reserved by Python/NetworkX internally to check if optional arguments are set. Every other hashable object (int, string, tuple...) is valid as a node!
+
+---
+
+## 🔍 Practice Questions — DiGraph, Shortest Path, Remove Node
+
+### Q1. DiGraph — in/out degree, successors, predecessors
+```python
+DG = nx.DiGraph()
+DG.add_edges_from([(1, 2), (3, 1), (1, 4)])
+
+print(DG.in_degree(1))           # 1 — only node 3 points TO 1
+print(DG.out_degree(1))          # 2 — node 1 points to 2 and 4
+print(list(DG.successors(1)))    # [2, 4] — who 1 points TO
+print(list(DG.predecessors(1)))  # [3] — who points TO 1
+```
+> 📱 **Instagram analogy:** `successors` = people YOU follow. `predecessors` = people who follow YOU.
+
+| Method | Meaning |
+|---|---|
+| `in_degree` | Edges coming IN to node |
+| `out_degree` | Edges going OUT from node |
+| `successors` | Nodes this node points TO |
+| `predecessors` | Nodes that point TO this node |
+
+---
+
+### Q2. Shortest Path
+```python
+G = nx.Graph()
+G.add_edges_from([(1, 2), (2, 3), (3, 4)])
+
+print(nx.shortest_path(G, 1, 4))        # [1, 2, 3, 4]
+print(nx.shortest_path_length(G, 1, 4)) # 3 (number of hops/edges)
+```
+> 🗺️ **Maps analogy:** Shortest path = the route. Length = number of roads you cross (not places you visit!). 4 places = 3 roads.
+
+---
+
+### Q3. Removing a Node removes its Edges too!
+```python
+G = nx.Graph()
+G.add_edges_from([(1, 2), (1, 3), (2, 4)])
+G.remove_node(1)
+
+print(list(G.nodes))  # [2, 3, 4] — node 1 gone
+print(list(G.edges))  # [(2, 4)] — edges (1,2) and (1,3) gone too!
+```
+> ⚠️ Node 3 still EXISTS even though it lost its only edge — it becomes an **isolated node** (degree 0). Removing a node ≠ removing its neighbors!
+
+---
+
 ## 🎯 Quick Cheat Sheet
 
 | Concept | Remember |
